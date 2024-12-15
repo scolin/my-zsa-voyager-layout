@@ -1,6 +1,7 @@
 #include QMK_KEYBOARD_H
 #include "version.h"
 #include "features/achordion.h"
+#include "print.h"
 #define MOON_LED_LEVEL LED_LEVEL
 #define ML_SAFE_RANGE SAFE_RANGE
 
@@ -44,6 +45,11 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 extern rgb_config_t rgb_matrix_config;
 
 void keyboard_post_init_user(void) {
+  // Customise these values to desired behaviour
+  debug_enable=true;
+  debug_matrix=true;
+  //debug_keyboard=true;
+  //debug_mouse=true;
   rgb_matrix_enable();
 }
 
@@ -92,6 +98,11 @@ bool rgb_matrix_indicators_user(void) {
 }
 
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
+  if (record->event.pressed) {
+    // On every key press, print the event's keycode and matrix position.
+    dprintf("kc=0x%04X, row=%2u, col=%2u\n",
+        keycode, record->event.key.row, record->event.key.col);
+  }
   if (!process_achordion(keycode, record)) { return false; }
   switch (keycode) {
 
