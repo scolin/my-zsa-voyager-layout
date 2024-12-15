@@ -139,3 +139,14 @@ bool achordion_chord(uint16_t tap_hold_keycode,
   }
   return achordion_opposite_hands(tap_hold_record, other_record);
 }
+
+
+uint16_t achordion_timeout(uint16_t tap_hold_keycode) {
+  switch (tap_hold_keycode) {
+    case LT(1,KC_SPACE):
+    case LT(2,KC_ENTER):
+      return 0;  // Bypass Achordion for layer keys.
+  }
+
+  return 800;  // Otherwise use a timeout of 800 ms instead of the default 1000
+}
