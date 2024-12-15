@@ -123,4 +123,19 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 }
 
 
-
+bool achordion_chord(uint16_t tap_hold_keycode,
+                     keyrecord_t* tap_hold_record,
+                     uint16_t other_keycode,
+                     keyrecord_t* other_record) {
+  // Also allow same-hand holds when the other key is in the rows outside the
+  // alphas. I need the `% (MATRIX_ROWS / 2)` because my keyboards are split.
+  uint8_t row = other_record->event.key.row % (MATRIX_ROWS / 2);
+  if (!(1 <= row && row <= 3)) {
+    return true;
+  } else {
+  // Also allow same-hand holds for exterior pinkies on alpha rows
+    if (other_record->event.key.row <  (MATRIX_ROWS / 2) && other_record->event.key.col == 1) { return true; }
+    if (other_record->event.key.row >= (MATRIX_ROWS / 2) && other_record->event.key.col == 5) { return true; }
+  }
+  return achordion_opposite_hands(tap_hold_record, other_record);
+}
