@@ -139,7 +139,7 @@ bool achordion_chord(uint16_t tap_hold_keycode,
   // Also allow same-hand holds when the other key is in the rows outside the
   // alphas. I need the `% (MATRIX_ROWS / 2)` because my keyboards are split.
   uint8_t other_row = other_record->event.key.row % (MATRIX_ROWS / 2);
-  uint8_t other_col = other_record->event.key.col;
+  // uint8_t other_col = other_record->event.key.col;
 
   if (!(1 <= other_row && other_row <= 3)) { return true; }
 
