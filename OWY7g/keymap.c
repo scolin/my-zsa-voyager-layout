@@ -1,6 +1,5 @@
 #include QMK_KEYBOARD_H
 #include "version.h"
-#include "features/achordion.h"
 #define MOON_LED_LEVEL LED_LEVEL
 #define ML_SAFE_RANGE SAFE_RANGE
 
@@ -11,9 +10,6 @@ enum custom_keycodes {
   HSV_169_255_255,
 };
 
-void matrix_scan_user(void) {
-  achordion_task();
-}
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   [0] = LAYOUT_voyager(
@@ -92,7 +88,6 @@ bool rgb_matrix_indicators_user(void) {
 }
 
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
-  if (!process_achordion(keycode, record)) { return false; }
   switch (keycode) {
 
     case RGB_SLD:
@@ -120,39 +115,4 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
       return false;
   }
   return true;
-}
-
-
-bool achordion_chord(uint16_t tap_hold_keycode,
-                     keyrecord_t* tap_hold_record,
-                     uint16_t other_keycode,
-                     keyrecord_t* other_record) {
-  uint8_t th_row = tap_hold_record->event.key.row;
-  uint8_t th_col = tap_hold_record->event.key.col;
-  // Consider tap_hold keys coming from external pinkies and thumbs as a chord
-  if (th_row <  (MATRIX_ROWS / 2) && th_col <= 1) {
-    return true;
-  }
-  if (th_row >= (MATRIX_ROWS / 2) && th_col >= 5) {
-    return true;
-  }
-  // Also allow same-hand holds when the other key is in the rows outside the
-  // alphas. I need the `% (MATRIX_ROWS / 2)` because my keyboards are split.
-  uint8_t other_row = other_record->event.key.row % (MATRIX_ROWS / 2);
-  // uint8_t other_col = other_record->event.key.col;
-
-  if (!(1 <= other_row && other_row <= 3)) { return true; }
-
-  return achordion_opposite_hands(tap_hold_record, other_record);
-}
-
-
-uint16_t achordion_timeout(uint16_t tap_hold_keycode) {
-  switch (tap_hold_keycode) {
-    case LT(1,KC_SPACE):
-    case LT(2,KC_ENTER):
-      return 0;  // Bypass Achordion for layer keys.
-  }
-
-  return 800;  // Otherwise use a timeout of 800 ms instead of the default 1000
 }
